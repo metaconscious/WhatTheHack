@@ -1,4 +1,4 @@
-add_executable(WhatTheHackEX EXCLUDE_FROM_ALL main.cpp)
+add_executable(WhatTheHackEx main.cpp)
 
-target_include_directories(WhatTheHackEX PRIVATE ${CMAKE_SOURCE_DIR}/utility/include)
-target_link_libraries(WhatTheHackEX PRIVATE Utility)
+target_include_directories(WhatTheHackEx PRIVATE ${CMAKE_SOURCE_DIR}/utility/include)
+target_link_libraries(WhatTheHackEx PRIVATE Utility)

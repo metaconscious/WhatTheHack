@@ -4,6 +4,7 @@
 #include "process.h"
 #include <tlhelp32.h>
 #include <iostream>
+#include "logger.h"
 #include "utils.h"
 
 DWORD getProcessId(std::string_view processName)
@@ -40,6 +41,13 @@ DWORD getProcessId(std::string_view processName)
 
     CloseHandle(hSnapshot);
     return processId;
+}
+
+HANDLE getProcessHandleByName(std::string_view processName)
+{
+    auto processId{ getProcessId(processName) };
+    auto hProcess{ OpenProcess(PROCESS_ALL_ACCESS, false, processId) };
+    return hProcess;
 }
 
 uintptr_t getModuleBaseAddress(DWORD procId, std::wstring_view moduleName)

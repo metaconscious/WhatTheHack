@@ -4,24 +4,12 @@
 
 #include <Windows.h>
 #include <algorithm>
+#include <exception>
 #include <ios>
 #include <iostream>
 #include <sstream>
 #include "utils.h"
-
-void printErrorMessageIfOccurred(std::string_view fileName, std::size_t lineNumber, std::string_view functionName)
-{
-    auto errorCode{ GetLastError() };
-
-    if (errorCode == 0)
-    {
-        return;
-    }
-
-    std::cerr << '[' << fileName << ':' << lineNumber << "] "
-              << functionName << ": " << std::system_category().message(static_cast<int>(errorCode)) << '\n';
-    exit(static_cast<int>(errorCode));
-}
+#include "logger.h"
 
 std::string toLower(std::string_view str)
 {
@@ -67,4 +55,21 @@ std::string byteArrayToHexString(BYTE* bytes, size_t size)
         ss << "\\x" << std::hex << static_cast<int>(bytes[i]);
     }
     return ss.str();
+}
+
+std::filesystem::path parsePath(std::string_view pathString)
+{
+    std::filesystem::path path{};
+
+    try
+    {
+        std::istringstream iss{ pathString.data() };
+        iss >> path;
+    }
+    catch (const std::exception& e)
+    {
+        error(__FILE__, __LINE__, __func__, e.what());
+    }
+
+    return path;
 }

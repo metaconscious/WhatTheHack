@@ -1,1 +1,1 @@
-add_library(Utility STATIC utils.cpp process.cpp memory.cpp)
+add_library(Utility STATIC utils.cpp process.cpp memory.cpp logger.cpp)

@@ -2,26 +2,70 @@
 // Created by user on 10/4/2022.
 //
 #include "logger.h"
-#include <windows.h>
 #include <system_error>
-#include <iostream>
 
-void error(std::string_view fileName, size_t lineNumber, std::string_view functionName, std::string_view message)
+std::string LogLevel::name(LogLevel::Level level)
 {
-    std::cerr << '[' << fileName << ':' << lineNumber << "] "
-              << functionName << ": " << message << '\n';
+    switch (level)
+    {
+    case Level::INFO_LEVEL:
+        return "INFO";
+    case Level::DEBUG_LEVEL:
+        return "DEBUG";
+    case Level::WARN_LEVEL:
+        return "WARN";
+    case Level::ERROR_LEVEL:
+        return "ERROR";
+    default:
+        return "???";
+    }
 }
 
-void printErrorMessageIfOccurred(std::string_view fileName, size_t lineNumber, std::string_view functionName)
+using Level = LogLevel::Level;
+
+void setLogBase(std::ostream& os,
+    LogLevel::Level level,
+    std::string_view fileName,
+    size_t lineNumber,
+    std::string_view date,
+    std::string_view time,
+    std::string_view functionName)
 {
-    auto errorCode{ GetLastError() };
+    os << '[' << fileName << ':' << lineNumber << ']'
+       << '[' << LogLevel::name(level) << ']'
+       << '[' << date << ' ' << time << ']'
+       << functionName << "(): ";
+}
 
-    if (errorCode == 0)
+void log(std::ostream& os,
+    Level level,
+    std::string_view fileName,
+    size_t lineNumber,
+    std::string_view date,
+    std::string_view time,
+    std::string_view functionName,
+    std::string_view message)
+{
+    setLogBase(os, level, fileName, lineNumber, date, time, functionName);
+    os << message << '\n';
+}
+void log(Level level,
+    std::string_view fileName,
+    size_t lineNumber,
+    std::string_view date,
+    std::string_view time,
+    std::string_view functionName,
+    std::string_view message)
+{
+    switch (level)
     {
-        return;
+    case Level::INFO_LEVEL:
+    case Level::DEBUG_LEVEL:
+    case Level::WARN_LEVEL:
+        log(std::cout, level, fileName, lineNumber, date, time, functionName, message);
+    case Level::ERROR_LEVEL:
+        log(std::cerr, level, fileName, lineNumber, date, time, functionName, message);
+    default:
+        log(std::cout, level, fileName, lineNumber, date, time, functionName, message);
     }
-
-    error(fileName, lineNumber, fileName, std::system_category().message(static_cast<int>(errorCode)));
-
-    exit(static_cast<int>(errorCode));
 }

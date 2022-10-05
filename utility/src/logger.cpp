@@ -25,15 +25,15 @@ using Level = LogLevel::Level;
 
 void setLogBase(std::ostream& os,
     LogLevel::Level level,
-    std::string_view fileName,
+    const std::filesystem::path& fileName,
     size_t lineNumber,
     std::string_view date,
     std::string_view time,
     std::string_view functionName)
 {
-    os << '[' << fileName << ':' << lineNumber << ']'
+    os << '[' << date << ' ' << time << ']'
        << '[' << LogLevel::name(level) << ']'
-       << '[' << date << ' ' << time << ']'
+       << '[' << fileName.filename().string() << ':' << lineNumber << ']'
        << functionName << "(): ";
 }
 

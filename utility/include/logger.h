@@ -6,6 +6,7 @@
 #define WHATTHEHACK_UTILITY_INCLUDE_LOGGER_H_
 
 #include <concepts>
+#include <filesystem>
 #include <iostream>
 #include <string>
 #include <string_view>
@@ -46,7 +47,7 @@ public:
 
 void setLogBase(std::ostream& os,
     LogLevel::Level level,
-    std::string_view fileName,
+    const std::filesystem::path& fileName,
     size_t lineNumber,
     std::string_view date,
     std::string_view time,

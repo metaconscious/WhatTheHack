@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <utility>
+#include "logger.h"
 #include "utils.h"
 
 uintptr_t getMultilevelPointerAddress(HANDLE hProcess, uintptr_t baseAddress, const std::vector<uint32_t>& offsets)
@@ -15,7 +16,7 @@ uintptr_t getMultilevelPointerAddress(HANDLE hProcess, uintptr_t baseAddress, co
     for (auto offset : offsets)
     {
         ReadProcessMemory(hProcess, reinterpret_cast<BYTE*>(address), &address, sizeof(address), nullptr);
-        std::cout << __func__ << ": address = " << std::hex << std::showbase << address << '\n';
+        DebugVarInfoFmt(address, std::ios_base::hex, std::ios_base::showbase);
         address += offset;
     }
 
@@ -29,7 +30,7 @@ uintptr_t getMultilevelPointerAddress(uintptr_t baseAddress, const std::vector<u
     for (auto offset : offsets)
     {
         address = *reinterpret_cast<decltype(address)*>(address);
-        std::cout << __func__ << ": address = " << std::hex << std::showbase << address << '\n';
+        DebugVarInfoFmt(address, std::ios_base::hex, std::ios_base::showbase);
         address += offset;
     }
 
@@ -55,7 +56,6 @@ void patchOperation(HANDLE hProcess, uintptr_t address, const char* opcodeString
 void patchOperation(uintptr_t address, const char* opcodeString, size_t size)
 {
     DWORD oldProtect{};
-    std::cout << "sizeof(opcodeString) = " << size << '\n';
     VirtualProtect(reinterpret_cast<BYTE*>(address), size, PAGE_EXECUTE_READWRITE, &oldProtect);
     memcpy(reinterpret_cast<BYTE*>(address),
         reinterpret_cast<BYTE*>(const_cast<char*>(opcodeString)),
@@ -87,7 +87,7 @@ Patcher::Patcher(uintptr_t targetAddress)
       m_originOps{ nullptr },
       m_size{ 0 }
 {
-    log(__func__);
+    Debug(toString());
 }
 
 void Patcher::backup()
@@ -97,7 +97,7 @@ void Patcher::backup()
         m_originOps = new BYTE[m_size];
         memcpy(m_originOps, reinterpret_cast<BYTE*>(m_targetAddress), m_size);
     }
-    log(__func__);
+    Debug(toString());
 }
 
 void Patcher::patch(const char* opcodeString, size_t size)
@@ -109,7 +109,7 @@ void Patcher::patch(const char* opcodeString, size_t size)
         patchOperation(m_targetAddress, opcodeString, m_size);
         m_patched = true;
     }
-    log(__func__);
+    Debug(toString());
 }
 
 void Patcher::patch(std::string_view nullTerminatedString)
@@ -126,7 +126,7 @@ void Patcher::patch(size_t nopSize)
         patchNop(m_targetAddress, nopSize);
         m_patched = true;
     }
-    log(__func__);
+    Debug(toString());
 }
 
 void Patcher::restore()
@@ -136,7 +136,7 @@ void Patcher::restore()
         patchOperation(m_targetAddress, m_originOps, m_size);
         m_patched = false;
     }
-    log(__func__);
+    Debug(toString());
 }
 
 Patcher::~Patcher()
@@ -170,12 +170,6 @@ std::string Patcher::toString() const noexcept
         ss << "m_originOps = " << byteArrayToHexString(m_originOps, m_size) << '\n';
     }
     return ss.str();
-}
-
-void Patcher::log(const char* funcName) const
-{
-    std::cout << funcName << ":\n"
-              << toString() << '\n';
 }
 
 Patcher::Patcher(Patcher&& patcher) noexcept: m_patched{ patcher.m_patched },

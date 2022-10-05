@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <windows.h>
-#include "utils.h"
+#include "logger.h"
 #include "memory.h"
 #include "process.h"
 
@@ -9,42 +9,42 @@ int main(int argc, const char* argv[])
 {
     if (argc != 3)
     {
-        std::cerr << "Incorrect argument number.\n";
+        Error("Incorrect argument number.");
         std::cout << "Usage: WhatTheHack <process-name> <module-name>\n";
         return 1;
     }
-    std::cout << __func__ << ": argv[0] = " << argv[0] << '\n';
+
+
     std::string_view processName{ argv[1] };
-    std::cout << __func__ << ": processName = " << processName << '\n';
+    DebugVarInfo(processName);
 
     auto processId{ getProcessId(processName) };
-    std::cout << __func__ << ": processId = " << processId << '\n';
+    DebugVarInfo(processId);
 
     std::string_view moduleName{ argv[2] };
-    std::cout << __func__ << ": moduleName = " << processName << '\n';
+    DebugVarInfo(moduleName);
 
     auto moduleBaseAddr{ getModuleBaseAddress(processId, moduleName) };
-
-    std::cout << "The base address of " << moduleName << " is " << std::hex << std::showbase << moduleBaseAddr << ".\n";
+    DebugVarInfoFmt(moduleBaseAddr, std::ios_base::hex, std::ios_base::showbase);
 
     auto hProcess{ OpenProcess(PROCESS_ALL_ACCESS, 0, processId) };
 
     auto dynamicPointerBase{ moduleBaseAddr + 0x10F4F4u };
-    std::cout << __func__ << ": dynamicPointerBase = " << std::hex << std::showbase << dynamicPointerBase << '\n';
+    DebugVarInfoFmt(dynamicPointerBase, std::ios_base::hex, std::ios_base::showbase);
 
     auto healthAddr{ getMultilevelPointerAddress(hProcess, dynamicPointerBase, { 0xf8 }) };
-    std::cout << __func__ << ": healthAddr = " << std::hex << std::showbase << healthAddr << '\n';
+    DebugVarInfoFmt(healthAddr, std::ios_base::hex, std::ios_base::showbase);
 
     auto ammoAddr{ getMultilevelPointerAddress(hProcess, dynamicPointerBase, { 0x374, 0x14, 0x0 }) };
-    std::cout << __func__ << ": ammoAddr = " << std::hex << std::showbase << ammoAddr << '\n';
+    DebugVarInfoFmt(ammoAddr, std::ios_base::hex, std::ios_base::showbase);
 
     int health{};
     ReadProcessMemory(hProcess, reinterpret_cast<BYTE*>(healthAddr), &health, sizeof(health), nullptr);
-    std::cout << __func__ << ": Current Health is " << std::dec << health << '\n';
+    DebugVarInfoFmt(health);
 
     int ammo{};
     ReadProcessMemory(hProcess, reinterpret_cast<BYTE*>(ammoAddr), &ammo, sizeof(ammo), nullptr);
-    std::cout << __func__ << ": Current Ammo is " << std::dec << ammo << '\n';
+    DebugVarInfoFmt(ammoAddr);
     
     bool invulnerable{ false };
 
@@ -66,7 +66,7 @@ int main(int argc, const char* argv[])
         }
     }
 
-    std::cout << "Process End.\n";
+    Debug("Process ended.");
 
     return 0;
 }

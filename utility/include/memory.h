@@ -43,7 +43,6 @@ public:
 
 private:
     void backup();
-    void log(const char* funcName) const;
 
 private:
     bool m_patched{};

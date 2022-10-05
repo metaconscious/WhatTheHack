@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <cstdio>
 #include <iostream>
+#include "logger.h"
 #include "memory.h"
 
 void hackMain(uintptr_t moduleBaseAddress)
@@ -76,7 +77,7 @@ DWORD WINAPI hackThread(HMODULE hModule)
 
     if (moduleBaseAddress != 0)
     {
-        std::cout << "Module Base Address is " << std::hex << std::showbase << moduleBaseAddress << ".\n";
+        DebugVarInfoFmt(moduleBaseAddress, std::ios_base::hex, std::ios_base::showbase);
         // !!! Separate RAII code in a new scope, cuz current function will exit without calling destructors!
         // !!! like some function like hackMain() below!
         // !!! or just wrapping the code with an enclosed curly brace!

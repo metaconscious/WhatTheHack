@@ -12,7 +12,7 @@ int main(int argc, const char* argv[])
 {
     if (argc != 3)
     {
-        error(__FILE__, __LINE__, __func__, "Incorrect argument number.");
+        Error("Incorrect argument number.");
         std::cout << "Usage: Injector <process-name> <dll-path>\n";
     }
 
@@ -23,13 +23,13 @@ int main(int argc, const char* argv[])
 
     if (hProcess == nullptr)
     {
-        error(__FILE__, __LINE__, __func__, "NULL process handle.");
+        Error("NULL process handle.");
         return 1;
     }
 
     if (hProcess == INVALID_HANDLE_VALUE)
     {
-        error(__FILE__, __LINE__, __func__, "Invalid handle value.");
+        Error("Invalid handle value.");
         return 2;
     }
 
@@ -37,7 +37,7 @@ int main(int argc, const char* argv[])
 
     if (location == nullptr)
     {
-        error(__FILE__, __LINE__, __func__, "Null location pointer.");
+        Error("Null location pointer.");
         return 3;
     }
 
@@ -53,7 +53,7 @@ int main(int argc, const char* argv[])
 
     if (hThread == nullptr)
     {
-        error(__FILE__, __LINE__, __func__, "NULL thread handle.");
+        Error("NULL thread handle.");
         return 4;
     }
 

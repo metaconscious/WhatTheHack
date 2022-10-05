@@ -9,7 +9,7 @@
 
 DWORD getProcessId(std::string_view processName)
 {
-    std::cout << __func__ << ": processName = " << processName << '\n';
+    DebugVarInfo(processName);
     DWORD processId{};
 
     HANDLE hSnapshot{ CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0) };
@@ -22,7 +22,7 @@ DWORD getProcessId(std::string_view processName)
         {
             do
             {
-                std::cout << __func__ << ": Current process name is " << processEntry.szExeFile << ".\n";
+                DebugVarInfo(processEntry.szExeFile);
                 if (isCaseInsensitivelyEqual(processEntry.szExeFile, processName))
                 {
                     processId = processEntry.th32ProcessID;
@@ -31,12 +31,16 @@ DWORD getProcessId(std::string_view processName)
         }
         else
         {
-            printErrorMessageIfOccurred(__FILE__, __LINE__, __func__);
+            auto code{ static_cast<int>(GetLastError()) };
+            SystemError(code);
+            exit(code);
         }
     }
     else
     {
-        printErrorMessageIfOccurred(__FILE__, __LINE__, __func__);
+        auto code{ static_cast<int>(GetLastError()) };
+        SystemError(code);
+        exit(code);
     }
 
     CloseHandle(hSnapshot);
@@ -64,7 +68,6 @@ uintptr_t getModuleBaseAddress(DWORD procId, std::wstring_view moduleName)
         {
             do
             {
-                std::wcout << __func__ << ": Current module name is " << moduleEntry.szModule << '\n';
                 if (!_wcsicmp(moduleEntry.szModule, moduleName.data()))
                 {
                     modBaseAddr = reinterpret_cast<uintptr_t>(moduleEntry.modBaseAddr);
@@ -74,12 +77,16 @@ uintptr_t getModuleBaseAddress(DWORD procId, std::wstring_view moduleName)
         }
         else
         {
-            printErrorMessageIfOccurred(__FILE__, __LINE__, __func__);
+            auto code{ static_cast<int>(GetLastError()) };
+            SystemError(code);
+            exit(code);
         }
     }
     else
     {
-        printErrorMessageIfOccurred(__FILE__, __LINE__, __func__);
+        auto code{ static_cast<int>(GetLastError()) };
+        SystemError(code);
+        exit(code);
     }
 
     CloseHandle(hSnap);
@@ -100,7 +107,7 @@ uintptr_t getModuleBaseAddress(DWORD procId, std::string_view moduleName)
         {
             do
             {
-                std::cout << __func__ << ": Current module name is " << moduleEntry.szModule << '\n';
+                DebugVarInfo(moduleEntry.szModule);
                 if (isCaseInsensitivelyEqual(moduleEntry.szModule, moduleName))
                 {
                     modBaseAddr = reinterpret_cast<uintptr_t>(moduleEntry.modBaseAddr);
@@ -110,12 +117,16 @@ uintptr_t getModuleBaseAddress(DWORD procId, std::string_view moduleName)
         }
         else
         {
-            printErrorMessageIfOccurred(__FILE__, __LINE__, __func__);
+            auto code{ static_cast<int>(GetLastError()) };
+            SystemError(code);
+            exit(code);
         }
     }
     else
     {
-        printErrorMessageIfOccurred(__FILE__, __LINE__, __func__);
+        auto code{ static_cast<int>(GetLastError()) };
+        SystemError(code);
+        exit(code);
     }
 
     CloseHandle(hSnap);

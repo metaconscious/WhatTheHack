@@ -21,29 +21,29 @@ std::string toLower(std::string_view str)
         std::begin(lowercase),
         [](std::uint8_t c)
         { return std::tolower(c); });
-    std::cout << __func__ << ": lowercase = " << lowercase << '\n';
+    DebugVarInfo(lowercase);
     return lowercase;
 }
 
 bool isCaseInsensitivelyEqual(std::string_view str1, std::string_view str2)
 {
-    std::cout << __func__ << ": str1 = " << str1 << '\n';
-    std::cout << __func__ << ": str2 = " << str2 << '\n';
+    DebugVarInfo(str1);
+    DebugVarInfo(str2);
     std::string&& lower1{ toLower(str1) };
-    std::cout << __func__ << ": lower1 = " << lower1 << '\n';
+    DebugVarInfo(lower1);
     std::string&& lower2{ toLower(str2) };
-    std::cout << __func__ << ": lower2 = " << lower2 << '\n';
+    DebugVarInfo(lower2);
     return lower1 == lower2;
 }
 
 DWORD parseProcessId(std::string_view integral)
 {
-    std::cout << __func__ << ": integral = " << integral << '\n';
+    DebugVarInfo(integral);
     std::stringstream ss{};
     ss << std::hex << integral;
     DWORD processId{};
     ss >> processId;
-    std::cout << __func__ << ": processId = " << processId << '\n';
+    DebugVarInfo(processId);
     return processId;
 }
 
@@ -68,7 +68,7 @@ std::filesystem::path parsePath(std::string_view pathString)
     }
     catch (const std::exception& e)
     {
-        error(__FILE__, __LINE__, __func__, e.what());
+        Error(e.what());
     }
 
     return path;

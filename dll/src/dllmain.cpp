@@ -5,63 +5,9 @@
 #include <windows.h>
 #include <cstdio>
 #include <iostream>
+#include "hack.h"
 #include "logger.h"
-#include "memory.h"
 
-void hackMain(uintptr_t moduleBaseAddress)
-{
-    auto localPlayerAddress{ moduleBaseAddress + 0x10f4f4 };
-    auto healthPtr{ reinterpret_cast<int*>(getMultilevelPointerAddress(localPlayerAddress, { 0xf8 })) };
-    auto ammoPtr{ reinterpret_cast<int*>(getMultilevelPointerAddress(localPlayerAddress, { 0x374, 0x14, 0x0 })) };
-
-    Patcher recoilPatcher{ moduleBaseAddress + 0x63786 };
-
-    bool infiniteHealing{};
-    bool infiniteAmmo{};
-    const auto& noRecoil{ recoilPatcher.patched() };
-
-    while (true)
-    {
-        if (GetAsyncKeyState(VK_END) & 1)
-        {
-            break;
-        }
-
-        if (GetAsyncKeyState(VK_NUMPAD1) & 1)
-        {
-            infiniteHealing = !infiniteHealing;
-        }
-
-        if (GetAsyncKeyState(VK_NUMPAD2) & 1)
-        {
-            infiniteAmmo = !infiniteAmmo;
-        }
-
-        if (GetAsyncKeyState(VK_NUMPAD3) & 1)
-        {
-            if (noRecoil)
-            {
-                recoilPatcher.restore();
-            }
-            else
-            {
-                recoilPatcher.patch(10);
-            }
-        }
-
-        if (infiniteHealing)
-        {
-            *healthPtr = 1337;
-        }
-
-        if (infiniteAmmo)
-        {
-            *ammoPtr = 1337;
-        }
-
-        Sleep(5);
-    }
-}
 
 DWORD WINAPI hackThread(HMODULE hModule)
 {
@@ -73,7 +19,7 @@ DWORD WINAPI hackThread(HMODULE hModule)
 
     std::cout << "Test string\n";
 
-    auto moduleBaseAddress{ reinterpret_cast<uintptr_t>(GetModuleHandle("ac_client.exe")) };
+    auto moduleBaseAddress{ reinterpret_cast<uintptr_t>(GetModuleHandleA("ac_client.exe")) };
 
     if (moduleBaseAddress != 0)
     {

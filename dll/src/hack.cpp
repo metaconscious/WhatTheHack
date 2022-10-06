@@ -8,7 +8,7 @@
 
 void hackMain(uintptr_t moduleBaseAddress)
 {
-    auto localPlayerEntity{ *reinterpret_cast<PlayerEntity**>(moduleBaseAddress + 0x10f4f4) };
+    auto localPlayerEntity{ *reinterpret_cast<Player**>(moduleBaseAddress + 0x10f4f4) };
 
     Patcher recoilPatcher{ moduleBaseAddress + 0x63786 };
 

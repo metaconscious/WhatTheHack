@@ -12,7 +12,7 @@
 class AmmoClip;
 class Weapon;
 
-class PlayerEntity
+class Player
 {
 public:
     union

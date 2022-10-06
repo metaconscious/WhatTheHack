@@ -58,6 +58,7 @@ int main(int argc, const char* argv[])
     }
 
     CloseHandle(hThread);
+    VirtualFreeEx(hProcess, location, MAX_PATH, MEM_RELEASE);
     CloseHandle(hProcess);
 
     return 0;

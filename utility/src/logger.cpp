@@ -63,8 +63,10 @@ void log(Level level,
     case Level::DEBUG_LEVEL:
     case Level::WARN_LEVEL:
         log(std::cout, level, fileName, lineNumber, date, time, functionName, message);
+        break;
     case Level::ERROR_LEVEL:
         log(std::cerr, level, fileName, lineNumber, date, time, functionName, message);
+        break;
     default:
         log(std::cout, level, fileName, lineNumber, date, time, functionName, message);
     }

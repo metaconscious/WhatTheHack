@@ -16,8 +16,10 @@ void hackMain(uintptr_t moduleBaseAddress) {
 
     bool infiniteHealing{};
     bool infiniteAmmo{};
-    const auto &noRecoil{recoilPatcher.patched()};
     bool triggerBot{};
+    const auto &noRecoil{recoilPatcher.patched()};
+    bool isSpectating{};
+    bool isInvisible{};
 
     while (true) {
         if (GetAsyncKeyState(VK_END) & 1) {
@@ -42,6 +44,14 @@ void hackMain(uintptr_t moduleBaseAddress) {
             } else {
                 recoilPatcher.patch(10);
             }
+        }
+
+        if (GetAsyncKeyState(VK_NUMPAD5) & 1) {
+            localPlayerEntity->spectateMode = (isSpectating = !isSpectating) ? spectateModeOn : modeOff;
+        }
+
+        if (GetAsyncKeyState(VK_NUMPAD6) & 1) {
+            localPlayerEntity->invisibleMode = (isInvisible = !isInvisible) ? invisibleModeOn : modeOff;
         }
 
         if (infiniteHealing) {
